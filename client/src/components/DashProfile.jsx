@@ -11,6 +11,7 @@ import {
   updateSuccess,
 } from '../redux/user/userSlice';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 const DashProfile = () => {
   const dispatch = useDispatch();
@@ -144,6 +145,17 @@ const DashProfile = () => {
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
           Update
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={'/create-post'}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
