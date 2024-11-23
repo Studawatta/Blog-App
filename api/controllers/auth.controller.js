@@ -86,7 +86,7 @@ export const googleAuth = async (req, res, next) => {
         { id: newUser._id, isAdmin: newUser.isAdmin },
         process.env.JWT_SECRET
       );
-      const { password: pass2, ...rest } = user._doc;
+      const { password: pass2, ...rest } = newUser._doc;
       res
         .cookie('access_token', token, { httpOnly: true })
         .status(200)
