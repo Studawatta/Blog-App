@@ -11,8 +11,10 @@ import {
 import { app } from '../firabase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { useNavigate } from 'react-router-dom';
 
 const CreatePost = () => {
+  const navigate = useNavigate();
   const [postImage, setPostImage] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
 
@@ -20,7 +22,7 @@ const CreatePost = () => {
 
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  console.log(formData);
+  const [publishError, setPublishError] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -70,12 +72,33 @@ const CreatePost = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-  console.log(formData);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/post/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPublishError(data.message);
+        return;
+      }
+      navigate(`/post/${data.slug}`);
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      setPublishError('Something went wrong!');
+    }
+  };
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
@@ -141,6 +164,7 @@ const CreatePost = () => {
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
+        {publishError && <Alert color="failure">{publishError}</Alert>}
       </form>
     </div>
   );
